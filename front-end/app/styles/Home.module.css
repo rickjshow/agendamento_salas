@@ -1,0 +1,14 @@
+.container {
+    display: flex;
+  }
+  
+  .content {
+    margin-left: 220px;
+    padding: 20px;
+  }
+  
+  .content h1 {
+    font-size: 36px;
+    color: #333;
+  }
+  
