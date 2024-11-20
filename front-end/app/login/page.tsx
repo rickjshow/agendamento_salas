@@ -1,17 +1,14 @@
-// app/login/page.tsx
-
-"use client"; // Instrução para o Next.js tratar este arquivo como cliente
+"use client";
 
 import { FormEvent, useState } from "react";
-import Link from "next/link";
 import axios from "axios";
-import { useRouter } from "next/navigation"; // Importando o hook useRouter
+import { useRouter } from "next/navigation";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter(); // Usando o hook useRouter para navegação
+  const router = useRouter();
 
   const getCsrfToken = async (): Promise<string> => {
     const response = await axios.get("http://localhost:8000/api/csrf-token");
@@ -21,10 +18,10 @@ const Login: React.FC = () => {
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-
+  
     try {
       const csrfToken = await getCsrfToken();
-
+  
       const response = await axios.post(
         "http://localhost:8000/api/login",
         { email, senha: password },
@@ -35,30 +32,37 @@ const Login: React.FC = () => {
           withCredentials: true,
         }
       );
-
-      // Armazenando os dados do usuário no localStorage
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-
-      console.log(response.data);
-      alert(`Bem-vindo, ${response.data.user.nome}!`);
-
-      // Redireciona para a página /home após login
-      router.push("/home");
+  
+      const { user } = response.data;
+  
+      // Verificar se a senha precisa ser redefinida
+      if (user.senha_resetada === "sim") {
+        localStorage.setItem("user", JSON.stringify(user));
+        router.push("/login/alterarsenha"); // Redireciona para a redefinição de senha
+        return;
+      }
+  
+      // Login bem-sucedido
+      localStorage.setItem("user", JSON.stringify(user));
+      alert(`Bem-vindo, ${user.nome}!`);
+      router.push("/home"); // Redireciona para a página principal
     } catch (err: any) {
-      setError(err.response?.data?.message || "Erro ao fazer login.");
+      // Tratar mensagens de erro específicas
+      if (err.response?.status === 403) {
+        setError("Seu usuário está inativo. Entre em contato com o administrador.");
+      } else {
+        setError(err.response?.data?.message || "Erro ao fazer login.");
+      }
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-sm bg-white rounded-lg shadow-md p-6">
         <h1 className="text-2xl font-bold mb-4 text-center">Login</h1>
         <form onSubmit={handleLogin}>
-          {error && (
-            <div className="text-red-500 text-sm mb-4">
-              {error}
-            </div>
-          )}
+          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
           <label className="block mb-2">Email:</label>
           <input
             type="email"

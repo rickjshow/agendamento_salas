@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GerenciamentoUsuariosController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/csrf-token', function () {
@@ -8,3 +9,10 @@ Route::get('/csrf-token', function () {
 });
 
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::post('/alterar-senha/{id}', [AuthController::class, 'alterarSenha']);
+Route::post('/usuarios/reset-password/{id}', [GerenciamentoUsuariosController::class, 'resetPassword']);
+Route::get('/usuarios', [GerenciamentoUsuariosController::class, 'index']);
+Route::post('/usuarios/store', [GerenciamentoUsuariosController::class, 'store']);
+Route::put('/usuarios/{id}/edit', [GerenciamentoUsuariosController::class, 'update']);
+Route::delete('/usuarios/{id}', [GerenciamentoUsuariosController::class, 'destroy']);

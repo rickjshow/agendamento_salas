@@ -22,7 +22,8 @@ class User extends Authenticatable
         'email',
         'senha',
         'papel',
-        'senha_resetada'
+        'senha_resetada',
+        'status'
     ];
 
     /**

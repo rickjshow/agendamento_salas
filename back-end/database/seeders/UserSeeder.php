@@ -20,6 +20,7 @@ class UserSeeder extends Seeder
             'senha' => Hash::make('senha123'), // Usando Hash para garantir a segurança da senha
             'papel' => 'admin',  // Atribuindo um papel, por exemplo, 'admin'
             'senha_resetada' => 'sim', // Ou 'sim', dependendo da lógica
+            'status' => 'ativo'
         ]);
     }
 }

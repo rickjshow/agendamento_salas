@@ -51,7 +51,7 @@ const Sidebar: React.FC = () => {
           {user.papel === "admin" && (
             <>
               <li>
-                <Link href="/usuarios">Gerenciar Usuários</Link>
+                <Link href="/gerenciamentoUsuarios">Gerenciar Usuários</Link>
               </li>
               <li>
                 <Link href="/ambientes">Gerenciar Ambientes</Link>

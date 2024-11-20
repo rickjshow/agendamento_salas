@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('senha');
             $table->string('papel');
             $table->string('senha_resetada');
+            $table->string('status');
             $table->timestamps();
         });
 

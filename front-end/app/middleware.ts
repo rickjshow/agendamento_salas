@@ -1,35 +1,27 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export function middleware(req: NextRequest) {
-  const userAuthCookie = req.cookies.get("user-auth");
+export function middleware(request: NextRequest) {
+  // Obter o token do usuário
+  const token = request.cookies.get('auth_token');
 
-  if (!userAuthCookie) {
-    // Se não houver cookie de autenticação, redireciona para a página de login
-    return NextResponse.redirect(new URL("/login", req.url));
+  // Redirecionar se não autenticado
+  if (!token) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  try {
-    const userData = JSON.parse(decodeURIComponent(userAuthCookie.value));
-    const userRole = userData.user.papel; // "admin" ou "professor"
-    const url = req.nextUrl.pathname;
+  // Decodificar token para verificar papel (opcional)
+  const user = JSON.parse(Buffer.from(token.value.split('.')[1], 'base64').toString());
 
-    // Se for admin, não há restrição de acesso
-    if (userRole === "admin") {
-      return NextResponse.next();
-    }
-
-    // Se for professor, deve ter acesso a algumas páginas
-    if (userRole === "professor") {
-      // Impede o acesso a páginas restritas para o professor
-      if (url.startsWith("/usuarios") || url.startsWith("/relatorios") || url.startsWith("/ambientes")) {
-        return NextResponse.redirect(new URL("/home", req.url));
-      }
-    }
-
-    return NextResponse.next();
-  } catch (error) {
-    console.error("Erro no middleware:", error);
-    return NextResponse.redirect(new URL("/login", req.url));
+  // Verificar se é rota de admin
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
+  if (isAdminRoute && user.papel !== 'admin') {
+    return NextResponse.redirect(new URL('/', request.url)); // Redireciona para home se não for admin
   }
+
+  return NextResponse.next(); // Permite continuar
 }
+
+export const config = {
+  matcher: ['/admin/:path*', '/dashboard/:path*'], // Rotas protegidas pelo middleware
+};
