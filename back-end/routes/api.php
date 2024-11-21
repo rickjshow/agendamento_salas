@@ -18,4 +18,8 @@ Route::post('/usuarios/store', [GerenciamentoUsuariosController::class, 'store']
 Route::put('/usuarios/{id}/edit', [GerenciamentoUsuariosController::class, 'update']);
 Route::delete('/usuarios/{id}', [GerenciamentoUsuariosController::class, 'destroy']);
 /*API DE AMBIENTES*/
-Route::get('/ambiente', [AmbienteController::class, 'index']);
+Route::get('/ambientes', [AmbienteController::class, 'index']);
+Route::post('/ambientes/store', [AmbienteController::class, 'store']);
+Route::get('/ambientes/{id}', [AmbienteController::class, 'show']);
+Route::put('/ambientes/{id}/edit', [AmbienteController::class, 'update']);
+Route::delete('/ambientes/{id}', [AmbienteController::class, 'destroy']);

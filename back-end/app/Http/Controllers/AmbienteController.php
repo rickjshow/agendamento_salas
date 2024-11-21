@@ -7,62 +7,70 @@ use Illuminate\Http\Request;
 
 class AmbienteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Listar todos os ambientes
     public function index()
     {
         $ambientes = Ambientes::all();
-        dd($ambientes);
-    
-       return response()->json($ambientes);
+        return response()->json($ambientes);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Criar novo ambiente
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nome' => 'required|string|max:255',
+            'tipo' => 'required|string|max:255',
+            'status' => 'required|in:Disponivel,Reservado,Manutencao',
+            'descricao' => 'nullable|string',
+        ]);
+    
+        $ambiente = Ambientes::create($request->all());
+        return response()->json($ambiente, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    // Mostrar ambiente específico
+    public function show($id)
     {
-        //
+        $ambiente = Ambientes::find($id);
+
+        if (!$ambiente) {
+            return response()->json(['message' => 'Ambiente não encontrado'], 404);
+        }
+
+        return response()->json($ambiente);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    // Atualizar ambiente
+    public function update(Request $request, $id)
     {
-        //
+        $ambiente = Ambientes::find($id);
+    
+        if (!$ambiente) {
+            return response()->json(['message' => 'Ambiente não encontrado'], 404);
+        }
+    
+        $request->validate([
+            'nome' => 'required|string|max:255',
+            'tipo' => 'required|string|max:255',
+            'status' => 'required|in:Disponivel,Reservado,Manutencao',
+            'descricao' => 'nullable|string',
+        ]);
+    
+        $ambiente->update($request->all());
+        return response()->json($ambiente);
     }
+    
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    // Deletar ambiente
+    public function destroy($id)
     {
-        //
-    }
+        $ambiente = Ambientes::find($id);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        if (!$ambiente) {
+            return response()->json(['message' => 'Ambiente não encontrado'], 404);
+        }
+
+        $ambiente->delete();
+        return response()->json(['message' => 'Ambiente excluído com sucesso']);
     }
 }

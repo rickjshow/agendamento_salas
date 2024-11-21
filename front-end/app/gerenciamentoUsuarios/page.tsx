@@ -221,4 +221,4 @@ const GerenciamentoUsuarios: React.FC = () => {
   );
 };
 
-export default withAuth(GerenciamentoUsuarios, ['admin']); // Apenas administradores podem acessar
+export default withAuth(GerenciamentoUsuarios, ['admin']);
