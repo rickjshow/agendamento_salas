@@ -54,7 +54,7 @@ const Sidebar: React.FC = () => {
                 <Link href="/gerenciamentoUsuarios">Gerenciar Usuários</Link>
               </li>
               <li>
-                <Link href="/ambientes">Gerenciar Ambientes</Link>
+                <Link href="/Ambiente">Gerenciar Ambientes</Link>
               </li>
               <li>
                 <Link href="/relatorios">Relatórios</Link>

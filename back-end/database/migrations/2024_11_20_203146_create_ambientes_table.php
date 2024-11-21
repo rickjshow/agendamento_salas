@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nome');
             $table->string('tipo');
-            $table->enum('status', ['disponível', 'reservado', 'manutenção']);
+            $table->string('status');
             $table->text('descricao')->nullable();
             $table->timestamps();
         });
