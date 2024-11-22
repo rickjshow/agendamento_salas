@@ -10,38 +10,28 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const getCsrfToken = async (): Promise<string> => {
-    const response = await axios.get("http://localhost:8000/api/csrf-token");
-    return response.data.csrf_token;
-  };
-
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-  
+
     try {
-      const csrfToken = await getCsrfToken();
-  
       const response = await axios.post(
         "http://localhost:8000/api/login",
         { email, senha: password },
         {
-          headers: {
-            "X-CSRF-TOKEN": csrfToken,
-          },
-          withCredentials: true,
+          withCredentials: true, // Permite cookies, se necessário
         }
       );
-  
+
       const { user } = response.data;
-  
+
       // Verificar se a senha precisa ser redefinida
       if (user.senha_resetada === "sim") {
         localStorage.setItem("user", JSON.stringify(user));
         router.push("/login/alterarsenha"); // Redireciona para a redefinição de senha
         return;
       }
-  
+
       // Login bem-sucedido
       localStorage.setItem("user", JSON.stringify(user));
       alert(`Bem-vindo, ${user.nome}!`);
@@ -55,7 +45,6 @@ const Login: React.FC = () => {
       }
     }
   };
-  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import styles from "../styles/Sidebar.module.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 interface User {
   id: number;
@@ -36,57 +36,80 @@ const Sidebar: React.FC = () => {
   };
 
   if (!user) {
-    return <div className={styles.sidebar}>Carregando...</div>;
+    return <div>Carregando...</div>;
   }
 
   return (
-    <div className={styles.sidebar}>
-      <nav>
-        <ul>
-          <li>
-            <Link href="/home">Home</Link>
-          </li>
+    <div className="d-flex flex-column flex-shrink-0 p-3 bg-dark text-white" style={{ height: "100vh", width: "250px" }}>
+      <h4 className="text-center mb-4">Painel</h4>
+      <ul className="nav nav-pills flex-column mb-auto">
+        <li className="nav-item">
+          <Link href="/home" className="nav-link text-white">
+            Home
+          </Link>
+        </li>
 
-          {/* O admin tem acesso irrestrito */}
-          {user.papel === "admin" && (
-            <>
-              <li>
-                <Link href="/gerenciamentoUsuarios">Gerenciar Usuários</Link>
-              </li>
-              <li>
-                <Link href="/Ambiente">Gerenciar Ambientes</Link>
-              </li>
-              <li>
-                <Link href="/relatorios">Relatórios</Link>
-              </li>
-              <li>
-                <Link href="/reservas">Gerenciar Reservas</Link>
-              </li>
-              <li>
-                <Link href="/agenda">Visualizar Agenda</Link>
-              </li>
-            </>
-          )}
+        {/* O admin tem acesso irrestrito */}
+        {user.papel === "admin" && (
+          <>
+            <li>
+              <Link href="/gerenciamentoUsuarios" className="nav-link text-white">
+                Gerenciar Usuários
+              </Link>
+            </li>
+            <li>
+              <Link href="/Ambiente" className="nav-link text-white">
+                Gerenciar Ambientes
+              </Link>
+            </li>
+            <li>
+              <Link href="/relatorios" className="nav-link text-white">
+                Relatórios
+              </Link>
+            </li>
+            <li>
+              <Link href="/reservas" className="nav-link text-white">
+                Gerenciar Reservas
+              </Link>
+            </li>
+            <li>
+              <Link href="/agenda" className="nav-link text-white">
+                Visualizar Agenda
+              </Link>
+            </li>
+          </>
+        )}
 
-          {/* O professor tem acesso restrito */}
-          {user.papel === "professor" && (
-            <>
-              <li>
-                <Link href="/reservas">Minhas Reservas</Link>
-              </li>
-              <li>
-                <Link href="/agenda">Visualizar Agenda</Link>
-              </li>
-            </>
-          )}
+        {/* O professor tem acesso restrito */}
+        {user.papel === "professor" && (
+          <>
+            <li>
+              <Link href="/reservas" className="nav-link text-white">
+                Minhas Reservas
+              </Link>
+            </li>
+            <li>
+              <Link href="/agenda" className="nav-link text-white">
+                Agenda
+              </Link>
+            </li>
+            <li>
+              <Link href="/Notificacoes" className="nav-link text-white">
+                Notificações
+              </Link>
+            </li>
+          </>
+        )}
 
-          <li>
-            <button onClick={handleLogout} className={`${styles.logoutButton}`}>
-              Logout
-            </button>
-          </li>
-        </ul>
-      </nav>
+        <li>
+          <button
+            onClick={handleLogout}
+            className="btn btn-danger w-100 mt-3"
+          >
+            Logout
+          </button>
+        </li>
+      </ul>
     </div>
   );
 };
