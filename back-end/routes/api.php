@@ -3,7 +3,11 @@
 use App\Http\Controllers\AmbienteController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GerenciamentoUsuariosController;
+<<<<<<< HEAD
 use App\Http\Controllers\NotificacaoController;
+=======
+use App\Http\Controllers\ReservasController;
+>>>>>>> b0853e8da32357be87a8a07b77cf5be2d6104ae0
 use Illuminate\Support\Facades\Route;
 
 Route::get('/csrf-token', function () {
@@ -25,7 +29,15 @@ Route::get('/ambientes/{id}', [AmbienteController::class, 'show']);
 Route::put('/ambientes/{id}/edit', [AmbienteController::class, 'update']);
 Route::delete('/ambientes/{id}', [AmbienteController::class, 'destroy']);
 
+<<<<<<< HEAD
 /*API DE NOTIFICAÇÕES*/
 Route::get('/notificacoes/{id}', [NotificacaoController::class, 'index']);
 
 
+=======
+Route::get('/reservas', [ReservasController::class, 'index']);
+Route::post('/reservas/store', [ReservasController::class, 'store']);
+Route::put('/reservas/{id}/edit', [ReservasController::class, 'update']);
+Route::delete('/reservas/{id}', [ReservasController::class, 'destroy']);
+Route::get('/reservas/disponiveis/{ambienteId}', [ReservasController::class, 'horariosDisponiveis']);
+>>>>>>> b0853e8da32357be87a8a07b77cf5be2d6104ae0
