@@ -12,5 +12,10 @@ class Ambientes extends Model
         'status',
         'descricao',
     ];
-    
+
+    public function reservas()
+    {
+        return $this->hasMany(Reserva::class, 'ambiente_id');
+    }
+
 }
