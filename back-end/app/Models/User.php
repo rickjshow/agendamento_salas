@@ -26,6 +26,11 @@ class User extends Authenticatable
         'status'
     ];
 
+    public function notificacoes()
+{
+    return $this->hasMany(Notificacoes::class, 'usuario_id');
+}
+
     /**
      * The attributes that should be hidden for serialization.
      *

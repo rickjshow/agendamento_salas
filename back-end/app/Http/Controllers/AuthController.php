@@ -15,29 +15,36 @@ class AuthController extends Controller
             'email' => 'required|email',
             'senha' => 'required',
         ]);
-
+    
         $user = User::where('email', $request->email)->first();
-
+    
         if (!$user) {
             return response()->json(['message' => 'Credenciais inválidas'], 401);
         }
-
+    
         // Verificar se o usuário está inativo
         if ($user->status !== 'ativo') {
             return response()->json(['message' => 'Seu usuário está inativo. Entre em contato com o administrador.'], 403);
         }
-
+    
         // Verificar as credenciais
         if (!Hash::check($request->senha, $user->senha)) {
             return response()->json(['message' => 'Credenciais inválidas'], 401);
         }
-
+    
+        // Retorna o usuário logado com o ID explicitamente
         return response()->json([
             'message' => 'Login bem-sucedido',
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'nome' => $user->nome,
+                'email' => $user->email,
+                'papel' => $user->papel,
+                'status' => $user->status,
+            ],
         ]);
     }
-
+    
 
     public function alterarSenha(Request $request, $id)
     {

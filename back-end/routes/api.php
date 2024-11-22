@@ -3,6 +3,7 @@
 use App\Http\Controllers\AmbienteController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GerenciamentoUsuariosController;
+use App\Http\Controllers\NotificacaoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/csrf-token', function () {
@@ -23,3 +24,8 @@ Route::post('/ambientes/store', [AmbienteController::class, 'store']);
 Route::get('/ambientes/{id}', [AmbienteController::class, 'show']);
 Route::put('/ambientes/{id}/edit', [AmbienteController::class, 'update']);
 Route::delete('/ambientes/{id}', [AmbienteController::class, 'destroy']);
+
+/*API DE NOTIFICAÇÕES*/
+Route::get('/notificacoes/{id}', [NotificacaoController::class, 'index']);
+
+
