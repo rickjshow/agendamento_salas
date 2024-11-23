@@ -3,7 +3,7 @@
 use App\Http\Controllers\AmbienteController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GerenciamentoUsuariosController;
-
+use App\Http\Controllers\Historico_reservasController;
 use App\Http\Controllers\NotificacaoController;
 
 use App\Http\Controllers\ReservasController;
@@ -41,3 +41,4 @@ Route::put('/reservas/{id}/edit', [ReservasController::class, 'update']);
 Route::delete('/reservas/{id}', [ReservasController::class, 'destroy']);
 Route::get('/reservas/disponiveis/{ambienteId}', [ReservasController::class, 'horariosDisponiveis']);
 
+Route::get('/historico-reservas', [Historico_reservasController::class, 'index']);

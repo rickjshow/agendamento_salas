@@ -14,6 +14,11 @@ class Historico_reserva extends Model
         'modificado_em',
     ];
 
-    public $timestamps = false; 
-}
+    public $timestamps = false; // Como você usa 'modificado_em', desative timestamps automáticos.
 
+    // Relacionamento com a reserva
+    public function reserva()
+    {
+        return $this->belongsTo(Reserva::class, 'reserva_id');
+    }
+}

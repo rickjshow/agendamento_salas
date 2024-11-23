@@ -77,6 +77,11 @@ const Sidebar: React.FC = () => {
                 Visualizar Agenda
               </Link>
             </li>
+            <li>
+              <Link href="/historicoReservas" className="nav-link text-white">
+                Historicos Reservas
+              </Link>
+            </li>
           </>
         )}
 
@@ -96,6 +101,11 @@ const Sidebar: React.FC = () => {
             <li>
               <Link href="/Notificacoes" className="nav-link text-white">
                 Notificações
+              </Link>
+            </li>
+            <li>
+              <Link href="/historicoReservas" className="nav-link text-white">
+                Historicos Reservas
               </Link>
             </li>
           </>
