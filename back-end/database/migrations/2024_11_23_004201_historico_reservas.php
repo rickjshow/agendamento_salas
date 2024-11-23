@@ -12,15 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('historico_reservas', function (Blueprint $table) {
-            $table->id(); // PK
-            $table->unsignedBigInteger('reserva_id'); // FK
-            $table->text('alteracoes'); // Descrição das alterações
-            $table->timestamp('modificado_em')->useCurrent(); // Data e hora da modificação
-
-            // Chave estrangeira para a tabela reservas
-            $table->foreign('reserva_id')->references('id')->on('reservas')->onDelete('cascade');
-
-            $table->timestamps(); // Para created_at e updated_at
+            $table->id();
+            $table->unsignedBigInteger('reserva_id');
+            $table->text('alteracoes');
+            $table->timestamp('modificado_em')->useCurrent();
+            $table->foreign('reserva_id')->references('id')->on('reservas');
+            $table->timestamps();
         });
     }
 
