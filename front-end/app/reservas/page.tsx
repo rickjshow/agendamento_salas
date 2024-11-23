@@ -31,6 +31,7 @@ interface User {
 
 const Reservas: React.FC = () => {
   const [reservas, setReservas] = useState<Reserva[]>([]);
+  const [horariosReservados, setHorariosReservados] = useState<Record<string, string[]>>({});
   const [ambientes, setAmbientes] = useState<Ambiente[]>([]);
   const [usuario, setUsuario] = useState<User | null>(null);
   const [horariosDisponiveis, setHorariosDisponiveis] = useState<Record<string, string[]>>({});
@@ -111,57 +112,72 @@ const Reservas: React.FC = () => {
   };
 
   const calcularHorariosDisponiveis = (ambienteId: number) => {
-    const reservasDoAmbiente = reservas.filter((r) => r.ambiente_id === ambienteId);
-    const horariosAgrupados: Record<string, string[]> = {};
+    const reservasDoAmbiente = reservas.filter(
+      (r) => r.ambiente_id === ambienteId && r.status === "ativa"
+    );
   
-    let diaAtual = new Date();
+    const horariosAgrupados: Record<string, string[]> = {};
+    const horariosReservados: Record<string, string[]> = {};
+  
+    let diaAtual = new Date(); // Data inicial
     const limiteDias = new Date();
-    limiteDias.setDate(limiteDias.getDate() + 7); // Limite de 7 dias no futuro
+    limiteDias.setUTCDate(limiteDias.getUTCDate() + 7); // Limite de 7 dias
   
     while (diaAtual <= limiteDias) {
-      const data = diaAtual.toISOString().split("T")[0]; // Exemplo: 2024-11-22
+      const data = diaAtual.toISOString().split("T")[0]; // Data no formato yyyy-mm-dd
       let horaAtual = new Date(diaAtual);
-      horaAtual.setHours(8, 0, 0, 0); // Horário de abertura
+      horaAtual.setUTCHours(8, 0, 0, 0); // Início às 08:00 UTC
   
       const horaFechamento = new Date(diaAtual);
-      horaFechamento.setHours(18, 0, 0, 0); // Horário de fechamento
+      horaFechamento.setUTCHours(18, 0, 0, 0); // Fechamento às 18:00 UTC
   
-      horariosAgrupados[data] = []; // Inicializa o array para o dia
+      horariosAgrupados[data] = [];
+      horariosReservados[data] = [];
   
       while (horaAtual < horaFechamento) {
         const horaProxima = new Date(horaAtual);
-        horaProxima.setHours(horaProxima.getHours() + 1);
+        horaProxima.setUTCHours(horaAtual.getUTCHours() + 1);
+  
+        const horario = `${horaAtual.toISOString().slice(11, 16)} - ${horaProxima
+          .toISOString()
+          .slice(11, 16)}`; // Horário no formato HH:mm em UTC
   
         // Verifica se o horário está ocupado
         const ocupado = reservasDoAmbiente.some((reserva) => {
-          const inicioReserva = new Date(reserva.hora_inicio.replace(" ", "T"));
-          const fimReserva = new Date(reserva.hora_fim.replace(" ", "T"));
+          // Ajuste de 3 horas para compensar o deslocamento
+          const inicioReserva = new Date(reserva.hora_inicio);
+          inicioReserva.setUTCHours(inicioReserva.getUTCHours() - 3); // Subtrai 3 horas
+          const fimReserva = new Date(reserva.hora_fim);
+          fimReserva.setUTCHours(fimReserva.getUTCHours() - 3); // Subtrai 3 horas
   
           return (
-            (horaAtual >= inicioReserva && horaAtual < fimReserva) || // Início dentro do intervalo
-            (horaProxima > inicioReserva && horaProxima <= fimReserva) || // Fim dentro do intervalo
-            (horaAtual <= inicioReserva && horaProxima >= fimReserva) // Abrange o intervalo completo
+            data === inicioReserva.toISOString().split("T")[0] && // Mesmo dia
+            !(
+              horaProxima <= inicioReserva || // Termina antes do início da reserva
+              horaAtual >= fimReserva // Começa depois do fim da reserva
+            )
           );
         });
   
-        if (!ocupado) {
-          // Adiciona somente os horários disponíveis
-          horariosAgrupados[data].push(
-            `${horaAtual.toISOString().slice(11, 16)} - ${horaProxima.toISOString().slice(11, 16)}`
-          );
+        if (ocupado) {
+          horariosReservados[data].push(horario); // Adiciona à lista de horários reservados
+        } else {
+          horariosAgrupados[data].push(horario); // Adiciona à lista de horários disponíveis
         }
   
-        horaAtual.setHours(horaAtual.getHours() + 1);
+        horaAtual = horaProxima; // Incrementa para o próximo horário
       }
   
-      diaAtual.setDate(diaAtual.getDate() + 1);
+      diaAtual.setUTCDate(diaAtual.getUTCDate() + 1); // Incrementa para o próximo dia
     }
   
-    console.log("Horários Disponíveis por Dia:", horariosAgrupados); // Adicione este log para depuração
-    setHorariosDisponiveis(horariosAgrupados); // Atualiza o estado com os horários disponíveis
+    console.log("Horários reservados (UTC com compensação):", horariosReservados);
+    console.log("Horários disponíveis (UTC com compensação):", horariosAgrupados);
+  
+    setHorariosDisponiveis(horariosAgrupados); // Atualiza os horários disponíveis
+    setHorariosReservados(horariosReservados); // Atualiza os horários reservados
   };
-  
-  
+
 
   const salvarReserva = async () => {
     try {
@@ -182,30 +198,60 @@ const Reservas: React.FC = () => {
       console.log("Payload enviado:", payload);
   
       if (reservaAtual) {
+        // Atualiza a reserva existente
         await axios.put(`http://localhost:8000/api/reservas/${reservaAtual.id}/edit`, payload);
       } else {
+        // Cria uma nova reserva
         await axios.post("http://localhost:8000/api/reservas/store", payload);
       }
+  
+      alert("Reserva salva com sucesso!");
       fetchDados();
       fecharModal();
     } catch (error: any) {
-      if (error.response && error.response.status === 409) {
-        alert(error.response.data.error || "Conflito de horário. Tente outro horário.");
+      // Verifica o status de erro retornado pelo backend
+      if (error.response) {
+        const { status, data } = error.response;
+        if (status === 409) {
+          alert(data.error || "Conflito de horário. Tente outro horário.");
+        } else if (status === 403) {
+          alert(data.error || "Você já atingiu o limite de reservas.");
+        } else {
+          alert("Erro inesperado ao salvar a reserva. Tente novamente.");
+        }
       } else {
-        console.error("Erro ao salvar reserva:", error.response?.data || error);
-        alert("Erro inesperado ao salvar a reserva. Tente novamente.");
+        console.error("Erro ao salvar reserva:", error);
+        alert("Erro de conexão com o servidor. Tente novamente.");
       }
     }
   };
   
 
-  const excluirReserva = async (id: number) => {
+  const excluirReserva = async (id: number, usuarioId: number) => {
     if (confirm("Tem certeza que deseja excluir esta reserva?")) {
       try {
-        await axios.delete(`http://localhost:8000/api/reservas/${id}`);
-        fetchDados();
-      } catch (error) {
+        await axios.delete(`http://localhost:8000/api/reservas/${id}`, {
+          data: { usuario_id: usuarioId },
+        });
+        alert("Reserva excluída com sucesso!");
+        fetchDados(); // Atualiza os dados após excluir
+      } catch (error: any) {
         console.error("Erro ao excluir reserva:", error);
+  
+        // Trata erros específicos com base no código de status HTTP
+        if (error.response) {
+          const { status, data } = error.response;
+          if (status === 403) {
+            alert(data.error || "Você não tem permissão para excluir esta reserva.");
+          } else if (status === 404) {
+            alert("Reserva não encontrada.");
+          } else {
+            alert("Erro ao excluir a reserva. Tente novamente.");
+          }
+        } else {
+          // Caso o erro não seja uma resposta do servidor
+          alert("Erro de conexão com o servidor. Tente novamente.");
+        }
       }
     }
   };
@@ -255,7 +301,7 @@ const Reservas: React.FC = () => {
                     Editar
                   </button>
                   <button
-                    onClick={() => excluirReserva(reserva.id)}
+                    onClick={() => usuario?.id && excluirReserva(reserva.id, usuario.id)}
                     className="bg-red-500 text-white px-2 py-1 rounded"
                   >
                     Excluir
@@ -320,10 +366,13 @@ const Reservas: React.FC = () => {
                           key={index}
                           onClick={() => setForm({ ...form, horario })}
                           className={`px-4 py-2 border rounded ${
-                            form.horario === horario
+                            horariosReservados[form.diaSelecionado]?.includes(horario)
+                              ? "bg-red-500 text-white cursor-not-allowed"
+                              : form.horario === horario
                               ? "bg-blue-500 text-white"
                               : "bg-gray-200 text-black"
                           }`}
+                          disabled={horariosReservados[form.diaSelecionado]?.includes(horario)} // Desabilita botão se reservado
                         >
                           {horario}
                         </button>
