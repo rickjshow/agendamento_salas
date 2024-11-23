@@ -43,53 +43,61 @@ class ReservasController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'ambiente_id' => 'required|exists:ambientes,id',
-            'hora_inicio' => 'required|date|before:hora_fim',
-            'hora_fim' => 'required|date|after:hora_inicio',
-            'usuario_id' => 'required|exists:users,id',
-            'status' => 'required|string|in:ativa,cancelada',
-        ]);
+{
+    $validated = $request->validate([
+        'ambiente_id' => 'required|exists:ambientes,id',
+        'hora_inicio' => 'required|date|before:hora_fim',
+        'hora_fim' => 'required|date|after:hora_inicio',
+        'usuario_id' => 'required|exists:users,id',
+        'status' => 'required|string|in:ativa,cancelada',
+    ]);
 
-        // Verifica conflito de horário
-        $conflito = Reserva::where('ambiente_id', $validated['ambiente_id'])
-            ->where(function ($query) use ($validated) {
-                $query->where('hora_inicio', '<', $validated['hora_fim'])
-                      ->where('hora_fim', '>', $validated['hora_inicio']);
-            })
-            ->exists();
+    // Verifica o status do ambiente
+    $ambiente = \App\Models\Ambientes::find($validated['ambiente_id']);
 
-        if ($conflito) {
-            return response()->json(['error' => 'Esse horário já está reservado.'], 409);
-        }
-
-        // Verifica se o usuário já possui uma reserva no mesmo dia
-        $reservaMesmoDia = Reserva::where('usuario_id', $validated['usuario_id'])
-            ->whereDate('hora_inicio', '=', date('Y-m-d', strtotime($validated['hora_inicio'])))
-            ->exists();
-
-        if ($reservaMesmoDia) {
-            return response()->json(['error' => 'Você já possui uma reserva neste dia.'], 403);
-        }
-
-        // Verifica se o usuário já possui 2 reservas na mesma semana
-        $dataInicio = Carbon::parse($validated['hora_inicio'])->startOfWeek(); // Início da semana
-        $dataFim = Carbon::parse($validated['hora_inicio'])->endOfWeek(); // Fim da semana
-
-        $reservasSemana = Reserva::where('usuario_id', $validated['usuario_id'])
-            ->whereBetween('hora_inicio', [$dataInicio, $dataFim])
-            ->count();
-
-        if ($reservasSemana >= 2) { // Aqui garantimos que o limite é 2
-            return response()->json(['error' => 'Você já atingiu o limite de 2 reservas nesta semana.'], 403);
-        }
-
-        // Criação da reserva
-        $reserva = Reserva::create($validated);
-
-        return response()->json($reserva, 201);
+    if ($ambiente->status === 'Manutencao') {
+        return response()->json(['error' => 'Este ambiente está em manutenção e não pode ser reservado.'], 403);
     }
+
+    // Verifica conflito de horário
+    $conflito = Reserva::where('ambiente_id', $validated['ambiente_id'])
+        ->where(function ($query) use ($validated) {
+            $query->where('hora_inicio', '<', $validated['hora_fim'])
+                  ->where('hora_fim', '>', $validated['hora_inicio']);
+        })
+        ->exists();
+
+    if ($conflito) {
+        return response()->json(['error' => 'Esse horário já está reservado.'], 409);
+    }
+
+    // Verifica se o usuário já possui uma reserva no mesmo dia
+    $reservaMesmoDia = Reserva::where('usuario_id', $validated['usuario_id'])
+        ->whereDate('hora_inicio', '=', date('Y-m-d', strtotime($validated['hora_inicio'])))
+        ->exists();
+
+    if ($reservaMesmoDia) {
+        return response()->json(['error' => 'Você já possui uma reserva neste dia.'], 403);
+    }
+
+    // Verifica se o usuário já possui 2 reservas na mesma semana
+    $dataInicio = Carbon::parse($validated['hora_inicio'])->startOfWeek(); // Início da semana
+    $dataFim = Carbon::parse($validated['hora_inicio'])->endOfWeek(); // Fim da semana
+
+    $reservasSemana = Reserva::where('usuario_id', $validated['usuario_id'])
+        ->whereBetween('hora_inicio', [$dataInicio, $dataFim])
+        ->count();
+
+    if ($reservasSemana >= 2) { // Aqui garantimos que o limite é 2
+        return response()->json(['error' => 'Você já atingiu o limite de 2 reservas nesta semana.'], 403);
+    }
+
+    // Criação da reserva
+    $reserva = Reserva::create($validated);
+
+    return response()->json($reserva, 201);
+}
+
 
 
     public function update(Request $request, $id)
