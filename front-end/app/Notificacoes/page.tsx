@@ -48,9 +48,9 @@ const Notificacoes: React.FC = () => {
     }
 
     try {
-      const user = JSON.parse(storedUser); // Parse do JSON salvo
-      const userId = user.id; // Recupera o ID do usuário
-      fetchNotificacoes(userId); // Busca as notificações
+      const user = JSON.parse(storedUser); 
+      const userId = user.id; 
+      fetchNotificacoes(userId);
     } catch (e) {
       setError("Erro ao processar os dados do usuário. Faça login novamente.");
       setLoading(false);

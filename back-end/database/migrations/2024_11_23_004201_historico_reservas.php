@@ -14,9 +14,13 @@ return new class extends Migration
         Schema::create('historico_reservas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('reserva_id');
+            $table->string('nome_usuario_responsavel')->nullable();
+            $table->string('nome_usuario_alteracao')->nullable();
             $table->text('alteracoes');
+            $table->string('nome_ambiente')->nullable();
+            $table->timestamp('hora_inicio')->nullable();
+            $table->timestamp('hora_fim')->nullable();
             $table->timestamp('modificado_em')->useCurrent();
-            $table->foreign('reserva_id')->references('id')->on('reservas');
             $table->timestamps();
         });
     }

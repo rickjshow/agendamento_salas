@@ -10,13 +10,17 @@ class Historico_reserva extends Model
 
     protected $fillable = [
         'reserva_id',
+        'nome_usuario_responsavel',
+        'nome_usuario_alteracao',
+        'nome_ambiente',
+        'hora_inicio',
+        'hora_fim',
         'alteracoes',
         'modificado_em',
     ];
 
-    public $timestamps = false; // Como você usa 'modificado_em', desative timestamps automáticos.
+    public $timestamps = false;
 
-    // Relacionamento com a reserva
     public function reserva()
     {
         return $this->belongsTo(Reserva::class, 'reserva_id');

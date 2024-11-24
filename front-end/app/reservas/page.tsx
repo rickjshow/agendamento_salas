@@ -26,7 +26,7 @@ interface Reserva {
 interface User {
   id: number;
   nome: string;
-  papel: string; // "admin" ou "professor"
+  papel: string;
 }
 
 const Reservas: React.FC = () => {
@@ -49,18 +49,18 @@ const Reservas: React.FC = () => {
     if (userData) {
       const parsedUser = JSON.parse(userData) as User;
       console.log("Usuário carregado:", parsedUser);
-      setUsuario(parsedUser); // Atualiza o estado do usuário
+      setUsuario(parsedUser);
     } else {
       console.error("Usuário não encontrado no localStorage.");
     }
-  }, []); // Executa apenas ao montar o componente
+  }, []);
   
   useEffect(() => {
     if (usuario) {
       console.log("Chamando fetchDados...");
-      fetchDados(); // Chama fetchDados somente após `usuario` ser definido
+      fetchDados();
     }
-  }, [usuario]); // Executa sempre que `usuario` for atualizado
+  }, [usuario]);
   
   const fetchDados = async () => {
     try {
@@ -121,10 +121,10 @@ const Reservas: React.FC = () => {
   
     let diaAtual = new Date(); // Data inicial
     const limiteDias = new Date();
-    limiteDias.setUTCDate(limiteDias.getUTCDate() + 7); // Limite de 7 dias
+    limiteDias.setUTCDate(limiteDias.getUTCDate() + 7);
   
     while (diaAtual <= limiteDias) {
-      const data = diaAtual.toISOString().split("T")[0]; // Data no formato yyyy-mm-dd
+      const data = diaAtual.toISOString().split("T")[0];
       let horaAtual = new Date(diaAtual);
       horaAtual.setUTCHours(8, 0, 0, 0); // Início às 08:00 UTC
   
@@ -146,36 +146,36 @@ const Reservas: React.FC = () => {
         const ocupado = reservasDoAmbiente.some((reserva) => {
           // Ajuste de 3 horas para compensar o deslocamento
           const inicioReserva = new Date(reserva.hora_inicio);
-          inicioReserva.setUTCHours(inicioReserva.getUTCHours() - 3); // Subtrai 3 horas
+          inicioReserva.setUTCHours(inicioReserva.getUTCHours() - 3);
           const fimReserva = new Date(reserva.hora_fim);
-          fimReserva.setUTCHours(fimReserva.getUTCHours() - 3); // Subtrai 3 horas
+          fimReserva.setUTCHours(fimReserva.getUTCHours() - 3); 
   
           return (
-            data === inicioReserva.toISOString().split("T")[0] && // Mesmo dia
+            data === inicioReserva.toISOString().split("T")[0] && 
             !(
-              horaProxima <= inicioReserva || // Termina antes do início da reserva
-              horaAtual >= fimReserva // Começa depois do fim da reserva
+              horaProxima <= inicioReserva || 
+              horaAtual >= fimReserva
             )
           );
         });
   
         if (ocupado) {
-          horariosReservados[data].push(horario); // Adiciona à lista de horários reservados
+          horariosReservados[data].push(horario);
         } else {
-          horariosAgrupados[data].push(horario); // Adiciona à lista de horários disponíveis
+          horariosAgrupados[data].push(horario);
         }
   
-        horaAtual = horaProxima; // Incrementa para o próximo horário
+        horaAtual = horaProxima;
       }
   
-      diaAtual.setUTCDate(diaAtual.getUTCDate() + 1); // Incrementa para o próximo dia
+      diaAtual.setUTCDate(diaAtual.getUTCDate() + 1);
     }
   
     console.log("Horários reservados (UTC com compensação):", horariosReservados);
     console.log("Horários disponíveis (UTC com compensação):", horariosAgrupados);
   
-    setHorariosDisponiveis(horariosAgrupados); // Atualiza os horários disponíveis
-    setHorariosReservados(horariosReservados); // Atualiza os horários reservados
+    setHorariosDisponiveis(horariosAgrupados);
+    setHorariosReservados(horariosReservados);
   };
 
 
@@ -198,7 +198,6 @@ const Reservas: React.FC = () => {
       console.log("Payload enviado:", payload);
   
       if (reservaAtual) {
-        // Atualiza a reserva existente
         await axios.put(`http://localhost:8000/api/reservas/${reservaAtual.id}/edit`, payload);
       } else {
         // Cria uma nova reserva
@@ -209,7 +208,6 @@ const Reservas: React.FC = () => {
       fetchDados();
       fecharModal();
     } catch (error: any) {
-      // Verifica o status de erro retornado pelo backend
       if (error.response) {
         const { status, data } = error.response;
         if (status === 409) {
@@ -249,7 +247,6 @@ const Reservas: React.FC = () => {
             alert("Erro ao excluir a reserva. Tente novamente.");
           }
         } else {
-          // Caso o erro não seja uma resposta do servidor
           alert("Erro de conexão com o servidor. Tente novamente.");
         }
       }
