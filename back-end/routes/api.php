@@ -7,7 +7,7 @@ use App\Http\Controllers\Historico_reservasController;
 use App\Http\Controllers\NotificacaoController;
 
 use App\Http\Controllers\ReservasController;
-
+use App\Http\Controllers\ReservasPassadasController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/csrf-token', function () {
@@ -42,3 +42,5 @@ Route::delete('/reservas/{id}', [ReservasController::class, 'destroy']);
 Route::get('/reservas/disponiveis/{ambienteId}', [ReservasController::class, 'horariosDisponiveis']);
 
 Route::get('/historico-reservas', [Historico_reservasController::class, 'index']);
+
+Route::get('/reservaspassadas', [ReservasPassadasController::class, 'index']);

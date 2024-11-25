@@ -70,7 +70,7 @@ const Reservas: React.FC = () => {
   
       // Busca as reservas, enviando o ID do usuário como parâmetro
       const responseReservas = await axios.get<Reserva[]>(
-        `http://localhost:8000/api/reservas?usuario_id=${usuario?.id}`
+        `http://localhost:8000/api/reservas`
       );
       setReservas(responseReservas.data);
     } catch (error) {
@@ -400,4 +400,4 @@ const Reservas: React.FC = () => {
   );
 };
 
-export default withAuth(Reservas, ["admin", "professor"]);
+export default withAuth(Reservas);

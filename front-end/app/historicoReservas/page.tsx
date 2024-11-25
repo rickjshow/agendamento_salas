@@ -5,6 +5,7 @@ import Layout from "../components/Layout";
 import axios from "axios";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import withAuth from "../Hoc/withAuth";
 
 // Interfaces para tipagem
 interface HistoricoReserva {
@@ -128,4 +129,4 @@ const HistoricoReservas: React.FC = () => {
   );
 };
 
-export default HistoricoReservas;
+export default withAuth(HistoricoReservas, ["admin"]);

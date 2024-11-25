@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
         User::create([
             'nome' => 'Admin',
             'email' => 'admin@gmail.com',
-            'senha' => Hash::make('senha123'), // Usando Hash para garantir a segurança da senha
+            'senha' => Hash::make('admin123'), // Usando Hash para garantir a segurança da senha
             'papel' => 'admin',  // Atribuindo um papel, por exemplo, 'admin'
             'senha_resetada' => 'sim', // Ou 'sim', dependendo da lógica
             'status' => 'ativo'

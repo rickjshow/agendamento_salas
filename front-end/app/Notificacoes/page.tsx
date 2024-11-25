@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import "bootstrap/dist/css/bootstrap.min.css";
+import withAuth from "../Hoc/withAuth";
 
 interface Notificacao {
   id: number;
@@ -95,4 +96,4 @@ const Notificacoes: React.FC = () => {
   );
 };
 
-export default Notificacoes;
+export default withAuth(Notificacoes);

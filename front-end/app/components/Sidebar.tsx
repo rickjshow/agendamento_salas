@@ -63,23 +63,23 @@ const Sidebar: React.FC = () => {
               </Link>
             </li>
             <li>
-              <Link href="/relatorios" className="nav-link text-white">
-                Relatórios
-              </Link>
-            </li>
-            <li>
               <Link href="/reservas" className="nav-link text-white">
                 Gerenciar Reservas
               </Link>
             </li>
             <li>
-              <Link href="/agenda" className="nav-link text-white">
-                Visualizar Agenda
+              <Link href="/reservaspassadas" className="nav-link text-white">
+                Reservas Passadas
               </Link>
             </li>
             <li>
               <Link href="/historicoReservas" className="nav-link text-white">
                 Historicos Reservas
+              </Link>
+            </li>
+            <li>
+              <Link href="/Notificacoes" className="nav-link text-white">
+                Notificações
               </Link>
             </li>
           </>
@@ -90,22 +90,17 @@ const Sidebar: React.FC = () => {
           <>
             <li>
               <Link href="/reservas" className="nav-link text-white">
-                Minhas Reservas
+                Reservas Atuais
               </Link>
             </li>
             <li>
-              <Link href="/agenda" className="nav-link text-white">
-                Agenda
+              <Link href="/reservaspassadas" className="nav-link text-white">
+                Reservas Passadas
               </Link>
             </li>
             <li>
               <Link href="/Notificacoes" className="nav-link text-white">
                 Notificações
-              </Link>
-            </li>
-            <li>
-              <Link href="/historicoReservas" className="nav-link text-white">
-                Historicos Reservas
               </Link>
             </li>
           </>
