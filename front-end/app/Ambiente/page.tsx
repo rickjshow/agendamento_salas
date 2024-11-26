@@ -165,7 +165,6 @@ const GerenciamentoAmbientes: React.FC = () => {
                             className="w-full border border-gray-300 px-3 py-2 rounded"
                         >
                             <option value="Disponivel">Disponível</option>
-                            <option value="Reservado">Reservado</option>
                             <option value="Manutencao">Manutenção</option>
                         </select>
                         </div>

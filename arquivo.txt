@@ -1,0 +1,5 @@
+GRANT ALL PRIVILEGES ON agendamento.* TO 'root'@'172.18.0.5';
+FLUSH PRIVILEGES;
+
+GRANT ALL PRIVILEGES ON agendamento.* TO 'root'@'%';
+FLUSH PRIVILEGES;

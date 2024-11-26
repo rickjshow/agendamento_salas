@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    container_name: laravel-backend
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./back-end:/var/www
+    environment:
+      APP_ENV: local
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: agendamento
+      DB_USERNAME: root
+      DB_PASSWORD: ""
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    container_name: next-frontend
+    restart: unless-stopped
+    working_dir: /usr/src/app
+    volumes:
+      - ./front-end:/usr/src/app
+    ports:
+      - "3000:3000"
+    command: "npm run dev"
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # Permite conexões sem senha
+      MYSQL_DATABASE: agendamento
+      MYSQL_ROOT_PASSWORD: ""           # Sem senha para o usuário root
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - app-network
+
+
+  phpmyadmin:  # Corrigido para ficar dentro da chave 'services'
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: ""
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
