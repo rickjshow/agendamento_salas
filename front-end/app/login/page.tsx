@@ -35,7 +35,7 @@ const Login: React.FC = () => {
       // Login bem-sucedido
       localStorage.setItem("user", JSON.stringify(user));
       alert(`Bem-vindo, ${user.nome}!`);
-      router.push("/home"); // Redireciona para a página principal
+      router.push("/home");
     } catch (err: any) {
       // Tratar mensagens de erro específicas
       if (err.response?.status === 403) {

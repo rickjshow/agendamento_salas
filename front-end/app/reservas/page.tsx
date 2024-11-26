@@ -66,6 +66,7 @@ const Reservas: React.FC = () => {
     try {
       // Busca os ambientes
       const responseAmbientes = await axios.get<Ambiente[]>("http://localhost:8000/api/ambientes");
+      console.log("Ambientes recebidos:", responseAmbientes.data);
       setAmbientes(responseAmbientes.data);
   
       // Busca as reservas, enviando o ID do usuário como parâmetro
@@ -171,9 +172,6 @@ const Reservas: React.FC = () => {
       diaAtual.setUTCDate(diaAtual.getUTCDate() + 1);
     }
   
-    console.log("Horários reservados (UTC com compensação):", horariosReservados);
-    console.log("Horários disponíveis (UTC com compensação):", horariosAgrupados);
-  
     setHorariosDisponiveis(horariosAgrupados);
     setHorariosReservados(horariosReservados);
   };
@@ -195,7 +193,6 @@ const Reservas: React.FC = () => {
         usuario_id: usuario.id, // Passa o ID do usuário para a API
       };
   
-      console.log("Payload enviado:", payload);
   
       if (reservaAtual) {
         await axios.put(`http://localhost:8000/api/reservas/${reservaAtual.id}/edit`, payload);
@@ -327,11 +324,13 @@ const Reservas: React.FC = () => {
                     required
                   >
                     <option value="">Selecione um ambiente</option>
-                    {ambientes.map((ambiente) => (
-                      <option key={ambiente.id} value={ambiente.id}>
-                        {ambiente.nome}
-                      </option>
-                    ))}
+                    {ambientes
+                      .filter((ambiente) => ambiente.status.toLowerCase() !== "manutencao")
+                      .map((ambiente) => (
+                        <option key={ambiente.id} value={ambiente.id}>
+                          {ambiente.nome}
+                        </option>
+                      ))}
                   </select>
                 </div>
                 {form.ambiente_id && (
